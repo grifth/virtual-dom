@@ -1,12 +1,31 @@
+<<<<<<< HEAD
 function Element (tagName, props, children) {
   this.tagName = tagName
   this.props = props
   if(children===undefined){
     children = []
+=======
+class VNode {
+  constructor(tag, children, text) {
+    this.tag = tag
+    this.text = text
+    this.children = children
+  }
+  render() {
+    if(this.tag === '#text') {
+      return document.createTextNode(this.text)
+    }
+    let el = document.createElement(this.tag)
+    this.children.forEach(vChild => {
+      el.appendChild(vChild.render())
+    })
+    return el
+>>>>>>> f5aa83757d9a9357b9e0d2e771895d06a6c913be
   }
   this.children = children
 }
 
+<<<<<<< HEAD
 Element.prototype.render = function () {
   var el = document.createElement(this.tagName) // 根据tagName构建
   var props = this.props
@@ -59,4 +78,29 @@ function diffChildren (oldChildren, newChildren, index, patches) {
     dfsWalk(child, newChild, currentNodeIndex, patches) // 深度遍历点
     leftNode = child
   })
+=======
+function v(tag, children, text) {
+  if(typeof children === 'string') {
+    text = children
+    children = []
+  }
+  console.log(text);
+  return new VNode(tag, children, text)
+>>>>>>> f5aa83757d9a9357b9e0d2e771895d06a6c913be
 }
+function patchElement(parent, newVNode, oldVNode, index = 0) {
+  if(!oldVNode) {
+    parent.appendChild(newVNode.render())
+  } else if(!newVNode) {
+    parent.removeChild(parent.childNodes[index])
+  } else if(newVNode.tag !== oldVNode.tag || newVNode.text !== oldVNode.text) {
+    parent.replaceChild(newVNode.render(), parent.childNodes[index])
+  }  else {
+    for(let i = 0; i < newVNode.children.length || i < oldVNode.children.length; i++) {
+      patchElement(parent.childNodes[index], newVNode.children[i], oldVNode.children[i], i)
+    }
+  }
+}
+let vnode1 = v('div',[v('#text','hello')])
+let vnode2 = v('div',[v('#text','world')])
+const root = document.querySelector('#root')
